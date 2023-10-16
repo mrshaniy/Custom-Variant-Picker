@@ -1,0 +1,72 @@
+{{ 'nws-custom-variant.css' | asset_url | stylesheet_tag }}
+<div class="nws-pdp-item">
+  <div class="nws-pdp-item-inner">
+    <a href="{{ product.url }}">
+      <div class="nws-pdp-img nws-variant-images">
+        <img src="{{ product.featured_image | img_url: "master" }}" class="nws-feature-img nws-same-img">
+        {% for variant in product.variants %}
+          <img
+            src="{{ variant.image.src | img_url: "master" }}"
+            alt="{{ variant.title }}"
+            class="nws-variant-img nws-same-img"
+            data-image-id="{{ variant.id }}"
+          >
+        {% endfor %}
+      </div>
+      <div class="nws-pdp-body">
+        <div class="nws-d-flex">
+          <div class="nws-pdp-heading">
+            <h2 class="pdp-title">{{ product.title }}</h2>
+          </div>
+        </div>
+      </div>
+    </a>
+    <!-- varient picker code start -->
+    <div class="nws-btn-form nws-pdp-form_{{ product.id }}_{{ nws-pdd }}">
+      {% if product.has_only_default_variant %}
+        <input type="hidden" id="no-varient" value="{{ variant.id }}">
+      {% else %}
+        <!-- variant title start -->
+        <div
+          class="nws-variant-title"
+        >
+          {{ product.variants.first.title }}
+        </div>
+        <!-- variant title end -->
+        <!-- variant price start -->
+        <span class="nws-variant-price">{{ product.variants.first.price | money }}</span>
+        <!-- variant price end -->
+
+        <div class="nws-varient-part">
+          {% for variant in product.variants %}
+            {% assign variant-color = variant.metafields.custom.nws_cutsom_variant %}
+            <div
+              class="nws-varient-box {% if product.selected_or_first_available_variant.id == variant.id %}nws-active{% endif %}"
+              style="{% if variant-color != blank %} background-color: {{ variant-color }}; border-color: {{ variant-color }}{% endif %}"
+              data="{{ variant.title }}"
+              data-price="{{ variant.price | money }}"
+              data-variant-id="{{ variant.id }}"
+            >
+              <input
+                type="radio"
+                class="nws-radio-button"
+                value="{{ variant.id }}"
+                {% if product.selected_or_first_available_variant.id == variant.id %}
+                  checked="checked"
+                {% endif -%}
+                data-variant-id="{{ variant.id }}"
+              >
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <!-- varient picker code end -->
+  </div>
+  {%- render 'nws-buy-button',
+    block: block,
+    product: product,
+    product_form_id: product_form_id,
+    section_id: section.id
+  -%}
+</div>
