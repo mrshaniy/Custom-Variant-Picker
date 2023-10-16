@@ -1,0 +1,106 @@
+(* add a new section nws-variant-picker.liquid *)
+<div class="nws-varient">
+  <div class="nws-padding">
+    <div class="nws-custom-conatiner">
+      {% for block in section.blocks %}
+        <div class="nws-inner-row">
+          {% for product in collections[block.settings.collection].products %}
+            {% assign nws-pdd = forloop.index %}
+            {%- render 'nws-variant-pdp-grid', product: product, nws-pdd: nws-pdd -%}
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% schema %}
+{
+"name": "Nws Custom Variant",
+"settings": [
+
+],
+
+"blocks": [
+     {
+    "type": "product-brand",
+    "name": "Product Brand",
+    "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Select Collection"
+    }
+    ]
+  }
+],
+
+"presets": [
+{
+"name": "Nws Custom Variant",
+"category": "Nws Custom Variant"
+}
+]
+}
+{% endschema %}
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script>
+  // change variant title and variant price on click variant
+    $('.nws-varient-box').click(function () {
+      var first_var_title = $(this).attr('data');
+      $(this).closest('.nws-btn-form').find('.nws-variant-title').text(first_var_title);
+
+      var first_var_price = $(this).attr('data-price');
+      $(this).closest('.nws-btn-form').find('.nws-variant-price').text(first_var_price);
+    });
+
+
+    // add "nws-active" class on clicked radio button/variant color
+    $(".nws-varient-box").click(function () {
+      // Remove 'nws-active' class from all siblings
+      $(this).siblings().removeClass("nws-active");
+      // Add Class 'nws-active' class for the clicked wrapper
+      $(this).addClass("nws-active");
+    });
+      // Add 'nws-active' class to the first child by default
+      $(".nws-varient-box:first-child").addClass("nws-active");
+
+
+    // on click radio button only one radio button checked/select
+    const radioButtons = $('.nws-radio-button');
+
+    // Add a click event handler to each radio button
+      radioButtons.on('click', function() {
+      // Uncheck all radio buttons
+      radioButtons.prop('checked', false);
+
+      // Check the clicked radio button
+      $(this).prop('checked', true);
+    });
+
+
+    // add a ".active-variant" class on click variant color
+    $('.nws-pdp-item .nws-varient-box').click(function() {
+      // Get the data-image URL from the clicked variant box
+      var imageUrl = $(this).data('image');
+
+      // Get the parent .nws-variant-images element of the clicked variant box
+      var variantImagesContainer = $(this).closest('.nws-pdp-item').find('.nws-variant-images');
+
+      // Remove the active-variant class from all variant images in the same container
+      variantImagesContainer.find('img').removeClass('active-variant');
+
+      // Update the src attribute of the clicked variant's image
+      var variantImage = variantImagesContainer.find('img[data-image-id="' + $(this).data('variant-id') + '"]');
+      variantImage.attr('src', imageUrl);
+
+      // Add the active-variant class to the clicked variant image
+      variantImage.addClass('active-variant');
+    });
+
+
+    // send selected variant value into cart on clicked selected radio box
+    jQuery('.nws-varient-box input.nws-radio-button').click(function () {
+      var d_val = jQuery(this).val();
+      $('input.product-variant-id').val(d_val);
+    });
+</script>
